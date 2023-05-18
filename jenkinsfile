@@ -1,19 +1,57 @@
-pipeline {
-    agent {
-        docker { image 'python:3.7-slim' }
+pipeline 
+{
+    agent 
+    {
+      node
+       {        
+         label "slave01"
+       }
     }
-    stages {
-        stage('Test') {
+    options 
+    { 
+      skipDefaultCheckout() 
+      disableConcurrentBuilds()
+    }    
+    stages {		
+        stage('Checkout Source') {
             steps {
-	       script{
-			sh """
-				docker rmi -f py-img
-				docker build -t py-img .
-				docker rm -f py-container
-				docker run --name py-container py-img
-			   """
-		  }
-            }
-        }
-    }
-}
+                    cleanWs()
+                    echo ":: git checkout source"
+                    checkout([
+                               $class: 'GitSCM',
+                               branches: [[name: "*/main"]],
+                               doGenerateSubmoduleConfigurations: false,
+                               extensions: [
+                                   [$class: 'RelativeTargetDirectory', relativeTargetDir: '.']
+                               ],                    
+                               submoduleCfg: [],
+                               userRemoteConfigs: 
+                               [
+                                  [
+                                     url: https://github.com/venh/hello-world-python.git
+                                  ]
+                               ]
+                      ])                
+                  }
+	} // end of Checkout Stage
+		
+        stage('Building & Running Container') {
+            steps {
+		     echo "Build Docker Image and Run the Container"
+		     script{ 
+				sh """
+					docker rmi -f py-img
+					docker build -t py-img .
+					docker rm -f py-container
+					docker run --name py-container py-img
+				 """
+		      }
+              } // end of Steps
+        } // end of Build stage	
+    } // end of Stages
+    post{
+        always {
+            
+	}
+    } // end of post
+} // end of Pipeline
