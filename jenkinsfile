@@ -32,7 +32,7 @@ pipeline
                                userRemoteConfigs: 
                                [
                                   [
-                                     url: https://github.com/venh/hello-world-python.git
+                                     url: "https://github.com/venh/hello-world-python.git"
                                   ]
                                ]
                       ])                
