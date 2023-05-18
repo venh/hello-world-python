@@ -7,6 +7,10 @@ pipeline
          label "slave01"
        }
     }
+     environment {
+	   BLD_STATUS = '$BUILD_STATUS'
+	   PRJ_NAME = '$PROJECT_NAME'
+     }// end of environment
     options 
     { 
       skipDefaultCheckout() 
@@ -51,7 +55,7 @@ pipeline
     } // end of Stages
     post{
         always {
-            
+            sendEmail('$DEFAULT_RECIPIENTS', null, "[${env.BLD_STATUS}] - ${env.PRJ_NAME} - Build # ${BUILD_NUMBER} ($BUILD_ID)", '''${SCRIPT, template="custom-html.template"}''') 
 	}
     } // end of post
 } // end of Pipeline
