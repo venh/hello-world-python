@@ -3,4 +3,4 @@ FROM python:3.7-slim
 COPY . .
 #RUN pipenv lock -r > requirements.txt && pip install -r requirements.txt
 #CMD /bin/sh
-ENTRYPOINT [ "python", "datetime.py" ]
+ENTRYPOINT [ "python", "helloworld.py" ]
