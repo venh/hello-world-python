@@ -5,8 +5,12 @@ pipeline {
     stages {
         stage('Test') {
             steps {
-                sh 'docker cp . .'
-                sh 'ENTRYPOINT [ "python", "datetime.py" ]'
+                sh """
+						docker rmi -f py-img
+						docker build -t py-img .
+						docker rm -f py-container
+						docker run --name py-container py-img
+					  """
             }
         }
     }
