@@ -1,16 +1,7 @@
 pipeline 
 {
-    agent 
-    {
-      node
-       {        
-         label "slave01"
-       }
-    }
-     environment {
-	   BLD_STATUS = '$BUILD_STATUS'
-	   PRJ_NAME = '$PROJECT_NAME'
-     }// end of environment
+    agent any
+   
     options 
     { 
       skipDefaultCheckout() 
@@ -21,21 +12,7 @@ pipeline
             steps {
                     cleanWs()
                     echo ":: git checkout source"
-                    checkout([
-                               $class: 'GitSCM',
-                               branches: [[name: "*/main"]],
-                               doGenerateSubmoduleConfigurations: false,
-                               extensions: [
-                                   [$class: 'RelativeTargetDirectory', relativeTargetDir: '.']
-                               ],                    
-                               submoduleCfg: [],
-                               userRemoteConfigs: 
-                               [
-                                  [
-                                     url: "https://github.com/venh/hello-world-python.git"
-                                  ]
-                               ]
-                      ])                
+                    git branch: 'main', url: 'https://github.com/venh/hello-world-python.git'                
                   }
 	} // end of Checkout Stage
 		
@@ -54,8 +31,8 @@ pipeline
         } // end of Build stage	
     } // end of Stages
     post{
-        always {
-            sendEmail('$DEFAULT_RECIPIENTS', null, "[${env.BLD_STATUS}] - ${env.PRJ_NAME} - Build # ${BUILD_NUMBER} ($BUILD_ID)", '''${SCRIPT, template="custom-html.template"}''') 
+        always {            
+	    printMsg("$JOB_BASE_NAME")
 	}
     } // end of post
 } // end of Pipeline
